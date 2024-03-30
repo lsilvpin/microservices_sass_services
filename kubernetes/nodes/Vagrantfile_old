@@ -1,0 +1,51 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+vms = ["control-plane", "worker-fred", "worker-neves", "worker-neon"]
+
+Vagrant.configure("2") do |config|
+  vms.each_with_index do |vm_name, index|
+    
+    node_storage_host_name = "node_storage_#{vm_name}"
+    node_storage_vm_name = "node_storage_#{vm_name}"
+
+    config.vm.box = "ubuntu/mantic64"
+    config.vm.hostname = vm_name
+    config.vm.box_check_update = false
+
+    config.vm.network "public_network", ip: sprintf("192.168.0.14%d", index), bridge: "enp5s0"
+    config.vm.synced_folder "./shared", "/cluster_storage"
+    config.vm.synced_folder "#{node_storage_host_name}", "/#{node_storage_vm_name}"
+
+    if vm_name == "control_plane"
+
+      config.vm.provider "virtualbox" do |vb|
+        vb.cpus = "1"
+        vb.memory = "2048"
+      end
+
+      config.vm.provision "shell", inline: <<-SHELL
+        cat /cluster_storage/id_rsa_pub.bak >> ~/.ssh/authorized_keys
+        apt-get install -y net-tools
+        apt-get update -y
+      SHELL
+
+    else
+
+      config.vm.provider "virtualbox" do |vb|
+        vb.cpus = "1"
+        vb.memory = "4096"
+      end
+
+      config.vm.provision "shell", inline: <<-SHELL
+        cat /cluster_storage/id_rsa_pub.bak >> ~/.ssh/authorized_keys
+        apt-get install -y net-tools
+        apt-get update -y
+      SHELL
+
+    end     
+
+  end
+
+end
+
