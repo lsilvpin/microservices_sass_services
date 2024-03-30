@@ -9,7 +9,7 @@ Vagrant.configure('2') do |config|
       config.vm.define "#{vm_name}" do |node|
         node.vm.box = 'ubuntu/mantic64'
         node.vm.hostname = "#{vm_name}"
-        node.vm.network 'public_network', ip: "192.168.0.14#{i}", bridge: 'enp5s0'
+        node.vm.network 'public_network', ip: sprintf("192.168.0.14%d", i), bridge: 'enp5s0'
         node.vm.synced_folder 'shared', '/cluster_storage'
         node.vm.synced_folder "node_storage_#{vm_name}", '/node_storage'
         if vm_name == 'control-plane'
