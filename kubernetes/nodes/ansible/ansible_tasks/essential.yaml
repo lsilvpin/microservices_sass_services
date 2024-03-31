@@ -8,12 +8,20 @@
     state: present
   loop:
     - "192.168.0.140 control-plane"
-    - "192.168.0.141 worker-fred"
-    - "192.168.0.142 worker-neves"
-    - "192.168.0.143 worker-neon"
+    - "192.168.0.170 cabine-jenkins"
+    - "192.168.0.201 worker-fred"
+    - "192.168.0.202 worker-neves"
+    - "192.168.0.203 worker-neon"
 
 - name: Atualizar todos os pacotes
   apt:
    name: "*"
    state: latest
    update_cache: yes
+
+- name: Instalar pacotes essenciais
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - net-tools

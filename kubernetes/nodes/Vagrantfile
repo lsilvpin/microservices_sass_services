@@ -1,31 +1,65 @@
 
-vms = { 'control-plane' => 1, 'worker-fred' => 1, 'worker-neves' => 1, 'worker-neon' => 1 }
+controlplanes = { 'control-plane' => 1 }
+cabines = { 'cabine-jenkins' => 1 }
+workers = { 'worker-fred' => 1, 'worker-neves' => 1, 'worker-neon' => 1 }
+vms = controlplanes.merge(cabines).merge(workers)
 
 Vagrant.configure('2') do |config|
+
   index = 0
   vms.each do |vm_name, count|
     count.times do |i|
       config.vm.define "#{vm_name}" do |node|
         node.vm.box = 'ubuntu/mantic64'
         node.vm.hostname = "#{vm_name}"
-        node.vm.network 'public_network', ip: sprintf("192.168.0.14%d", index), bridge: 'enp5s0'
         node.vm.synced_folder 'shared', '/cluster_storage'
         node.vm.synced_folder "node_storage_#{vm_name}", '/node_storage'
-        if vm_name == 'control-plane'
-          node.vm.provider 'virtualbox' do |vb|
-            vb.cpus = 1
-            vb.memory = '2048'
-          end
-        else
-          node.vm.provider 'virtualbox' do |vb|
-            vb.cpus = 1
-            vb.memory = '4096'
-          end
-        end
         node.vm.provision 'ansible' do |ansible|
           ansible.playbook = './ansible/playbook.yaml'
         end
         index += 1
+      end
+    end
+  end
+
+  controlplane_index = 0
+  controlplanes.each do |vm_name, count|
+    count.times do |i|
+      config.vm.define "#{vm_name}" do |node|
+        node.vm.network 'public_network', ip: sprintf("192.168.0.14%d", controlplane_index), bridge: 'enp5s0'
+        node.vm.provider 'virtualbox' do |vb|
+          vb.cpus = 1
+          vb.memory = 512
+        end
+        controlplane_index += 1
+      end
+    end
+  end
+
+  cabines_index = 0
+  cabines.each do |vm_name, count|
+    count.times do |i|
+      config.vm.define "#{vm_name}" do |node|
+        node.vm.network 'public_network', ip: sprintf("192.168.0.17%d", cabines_index), bridge: 'enp5s0'
+        node.vm.provider 'virtualbox' do |vb|
+          vb.cpus = 1
+          vb.memory = 1024
+        end
+        cabines_index += 1
+      end
+    end
+  end
+
+  workers_index = 0
+  workers.each do |vm_name, count|
+    count.times do |i|
+      config.vm.define "#{vm_name}" do |node|
+        node.vm.network 'public_network', ip: sprintf("192.168.0.20%d", workers_index), bridge: 'enp5s0'
+        node.vm.provider 'virtualbox' do |vb|
+          vb.cpus = 1
+          vb.memory = 2048
+        end
+        workers_index += 1
       end
     end
   end

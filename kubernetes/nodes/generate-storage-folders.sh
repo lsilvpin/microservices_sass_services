@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Generating storage folders for each node"
-vm_names="control-plane worker-fred worker-neves worker-neon"
+vm_names="control-plane cabine-jenkins worker-fred worker-neves worker-neon"
 echo "VM names: $vm_names"
 echo ""
 

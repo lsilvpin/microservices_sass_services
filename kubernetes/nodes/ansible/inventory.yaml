@@ -3,22 +3,28 @@ controlplanes:
     control-plane:
       ansible_host: 192.168.0.140
 
+cabines:
+  hosts:
+    cabine-jenkins:
+      ansible_host: 192.168.0.170
+
 workers:
   hosts:
     worker-fred:
-      ansible_host: 192.168.0.141
+      ansible_host: 192.168.0.200
     worker-neves:
-      ansible_host: 192.168.0.142
+      ansible_host: 192.168.0.201
     worker-neon:
-      ansible_host: 192.168.0.143
+      ansible_host: 192.168.0.202
 
 network:
   children:
     controlplanes:
+    cabines:
     workers:
 
 all:
   vars:
     ansible_user: vagrant
-    ansible_ssh_private_key_file: ~/.ssh/id_rsa
+    ansible_ssh_private_key_file: ~/.vagrant.d/insecure_private_key
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
