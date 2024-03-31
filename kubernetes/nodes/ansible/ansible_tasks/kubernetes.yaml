@@ -1,0 +1,48 @@
+- name: Instalar dependências do Kubernetes
+  become: true
+  become_method: sudo
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
+- name: Adicionar chave GPG  do Kubernetes
+  become: true
+  become_method: sudo
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Adicionar repositório do Kubernetes
+  become: true
+  become_method: sudo
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+  notify: update_handler
+
+- name: Instalar kubeadm, kubelet e kubectl
+  become: true
+  become_method: sudo
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - kubeadm
+    - kubelet
+    - kubectl
+
+- name: Iniciar e habilitar kubelet
+  become: true
+  become_method: sudo
+  service:
+    name: kubelet
+    state: started
+    enabled: yes
+

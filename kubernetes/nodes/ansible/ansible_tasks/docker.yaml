@@ -1,0 +1,14 @@
+- name: Instalar Docker
+  become: true
+  become_method: sudo
+  apt:
+    name: docker.io
+    state: present
+
+- name: Adicionar usuário ao grupo docker
+  become: true
+  become_method: sudo
+  user:
+    name: vagrant
+    groups: docker
+    append: yes

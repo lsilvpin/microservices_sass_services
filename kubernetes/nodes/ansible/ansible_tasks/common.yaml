@@ -1,0 +1,19 @@
+- name: Ping all nodes
+  ansible.builtin.ping:
+
+- name: Configurar nomes de domínio (DNS manual)
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ item }}"
+    state: present
+  loop:
+    - "192.168.0.140 control-plane"
+    - "192.168.0.141 worker-fred"
+    - "192.168.0.142 worker-neves"
+    - "192.168.0.143 worker-neon"
+
+- name: Atualizar todos os pacotes
+  apt:
+   name: "*"
+   state: latest
+   update_cache: yes

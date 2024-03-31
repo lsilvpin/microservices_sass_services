@@ -1,0 +1,6 @@
+- name: Main Playbook
+  hosts: all
+  become: true
+  tasks:
+    - include_tasks: ./ansible_tasks/common.yaml
+    - include_tasks: ./ansible_tasks/docker.yaml
